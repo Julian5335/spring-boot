@@ -1,0 +1,13 @@
+{
+  "name": "spring-boot",
+  "version": "1.0.0",
+  "description": "Express project made to work similar to spring boot",
+  "scripts": {
+    "start": "tsc && node dist/app.js"
+  },
+  "author": "Julian",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}
