@@ -1,9 +1,15 @@
 {
-  "name": "spring-boot",
+  "name": "@julian5335/spring-boot-node",
   "version": "1.0.0",
   "description": "Express project made to work similar to spring boot",
+  "main": "lib/index.js",
+  "types": "lib",
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "build": "tsc -p ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Julian5335/spring-boot.git"
   },
   "author": "Julian",
   "license": "ISC",
