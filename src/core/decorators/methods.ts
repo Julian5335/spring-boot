@@ -1,6 +1,6 @@
-import { IRouter } from "../models/irouter";
-import { MetadataKeys } from "../enums/metadata-keys";
 import { HttpMethod } from "../enums/http-method";
+import { MetadataKeys } from "../enums/metadata-keys";
+import { IRouter } from "../models/irouter";
 
 const methodDecoratorFactory = (method: HttpMethod) => {
     return (path?: string): MethodDecorator => {
@@ -22,7 +22,4 @@ const methodDecoratorFactory = (method: HttpMethod) => {
     }
 }
 
-export const Get = methodDecoratorFactory(HttpMethod.GET);
-export const Post = methodDecoratorFactory(HttpMethod.POST);
-export const Put = methodDecoratorFactory(HttpMethod.PUT);
-export const Delete = methodDecoratorFactory(HttpMethod.DELETE);
+export default methodDecoratorFactory

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import Controller from './core/decorators/controller';
-import { Delete, Get, Post, Put } from './core/decorators/methods';
+import { Controller, Delete, Get, Post, Put } from '.';
 
 interface User {
     id: number

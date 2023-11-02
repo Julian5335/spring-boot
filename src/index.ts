@@ -1,7 +1,18 @@
 import express, { Handler } from 'express';
+import "reflect-metadata";
+import methodDecoratorFactory from './core/decorators/methods';
+import { HttpMethod } from './core/enums/http-method';
 import { MetadataKeys } from './core/enums/metadata-keys';
 import { IRouter } from './core/models/irouter';
-import "reflect-metadata"
+
+export const Controller = (basePath: string): ClassDecorator => {
+    return target =>  Reflect.defineMetadata(MetadataKeys.BASE_PATH, basePath, target)
+}
+
+export const Get = methodDecoratorFactory(HttpMethod.GET);
+export const Post = methodDecoratorFactory(HttpMethod.POST);
+export const Put = methodDecoratorFactory(HttpMethod.PUT);
+export const Delete = methodDecoratorFactory(HttpMethod.DELETE);
 
 export default class App {
 
