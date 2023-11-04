@@ -6,8 +6,8 @@ Create controller classes in a similar manner to spring boot
 
 ### user.controller.ts
 ```typescript
-import { Controller, Delete, Get, Post, Put } from '@julian5335/spring-boot-node';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { Controller, Delete, Get, Middleware, Post, Put } from '.';
 
 interface User {
     id: number
@@ -70,10 +70,33 @@ export default class UserController {
         this.users.splice(index, 1)
         res.status(200).json();
     }
+
+    @Middleware({ path:'/', order: 1 })
+    public log1(req: Request, res: Response, next: NextFunction) {
+        console.log("-----1-----")
+        next()
+    }
+    @Middleware({ path:'/', order: 4 })
+    public log3(req: Request, res: Response, next: NextFunction) {
+        console.log("-----4-----")
+        next()
+    }
+    @Middleware({ path:'/', order: 3 })
+    public log4(req: Request, res: Response, next: NextFunction) {
+        console.log("-----3-----")
+        next()
+    }
+    @Middleware({ path:'/', order: 2 })
+    public log2(req: Request, res: Response, next: NextFunction) {
+        console.log("-----2-----")
+        next()
+    }
 }
 ```
 
 Pass an array of controller classes into the App class and create the server with app.instance
+
+The middleware functions run in the specified order before the http routes
 
 ### index.ts
 ```typescript
