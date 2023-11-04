@@ -2,7 +2,7 @@ import { HttpMethod } from "../enums/http-method";
 import { MetadataKeys } from "../enums/metadata-keys";
 import { IRouter } from "../models/irouter";
 
-interface RouterMethodInput {
+export interface RouterMethodInput {
     path: string,
     order?: number
 }
