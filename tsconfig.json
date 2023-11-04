@@ -8,10 +8,10 @@
     "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "skipLibCheck": true
+    "sourceMap": true
   },
   "include": [
     "src"

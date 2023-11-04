@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "types": "lib",
   "scripts": {
+    "dev": "tsc && node lib/app.js",
     "build": "tsc -p ."
   },
   "repository": {
