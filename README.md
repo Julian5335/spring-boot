@@ -7,7 +7,7 @@ Create controller classes in a similar manner to spring boot
 ### user.controller.ts
 ```typescript
 import { NextFunction, Request, Response } from 'express';
-import { Controller, Delete, Get, Middleware, Post, Put } from '.';
+import { Controller, Delete, Get, Middleware, Post, Put } from '@julian5335/spring-boot-node';
 
 interface User {
     id: number
@@ -131,5 +131,56 @@ server.listen(PORT, () => {
     "skipLibCheck": true,
     "experimentalDecorators": true
   }
+}
+```
+## Error handling
+
+Catch all errors including promises
+
+Extend the HandledError class to implement custom errors
+
+```typescript
+export class BadRequestError extends HandledError {
+    constructor(message: string, key?: string) {
+        super({ [key ?? "_"]: message }, 400)
+    }
+}
+
+export class ForbiddenError extends HandledError {
+    constructor(message: string, key?: string) {
+        super({ [key ?? "_"]: message }, 403)
+    }
+}
+
+@Get('/:id')
+public async findById(req: Request, res: Response) {
+    await this.delay(1000)
+    throw new BadRequestError("Not found", "id")
+    const id = Number(req.params.id)
+    const user = this.users.find(x => x.id == id);
+    if (user) {
+        return res.status(200).json({ user });
+    }
+    return res.status(404).json({ message: 'User not found!' });
+}
+```
+
+The above code results in the following error response
+
+```json
+{
+    "errors": {
+        "id": "Not found"
+    }
+}
+```
+
+Any uncaught errors result in the following error response.
+
+```json
+{
+    "errors": {
+        "_": "Internal server error"
+    }
 }
 ```

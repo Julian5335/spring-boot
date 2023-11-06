@@ -1,9 +1,10 @@
-import express, { Handler } from 'express';
+import express, { Handler, NextFunction, Request, Response } from 'express';
 import "reflect-metadata";
 import methodDecoratorFactory from './core/decorators/methods';
 import { HttpMethod } from './core/enums/http-method';
 import { MetadataKeys } from './core/enums/metadata-keys';
 import { IRouter } from './core/models/irouter';
+import HandledError from './handled.error';
 
 export const Controller = (basePath: string): ClassDecorator => {
     return target =>  Reflect.defineMetadata(MetadataKeys.BASE_PATH, basePath, target)
@@ -20,10 +21,11 @@ export default class App {
     readonly instance = express();
     private controllers: any[] = []
 
-    constructor(controllers: any[], middleware: any[] = []) {
+    constructor(controllers: any[]) {
         this.controllers = controllers
         this.registerMiddleware()
         this.registerRouters();
+        this.useErrorHandler()
     }
     
     private registerMiddleware() {
@@ -67,10 +69,31 @@ export default class App {
         // Add middlewares first
         [...middlewares, ...httpRoutes].forEach(route => {
             const { method, path, name} = route
-            router[method](path, controllerInstance[String(name)].bind(controllerInstance));
+            router[method](path, this.catchWrap(controllerInstance[String(name)], controllerInstance));
         });
 
         this.instance.use(basePath, router);
+    }
+
+    private catchWrap(originalFunction: any, controllerInstance: {[name: string]: express.Handler}) {
+        return async function(req: Request, res: Response, next: NextFunction) {
+            try {
+                return await originalFunction.call(controllerInstance, req, res, next);
+            } catch (e) {
+                next(e);
+            }
+        };
+    }
+
+    private useErrorHandler() {
+        const errorHandler = (e: Error, req: Request, res: Response, next: NextFunction) => {
+            if (e instanceof HandledError) {
+                return res.status(e.status).json({ errors : e.errors })
+            }
+            console.log(e.name, e.stack);
+            return res.status(500).json({ errors: { _: "Internal server error" } })
+        }
+        this.instance.use(errorHandler)
     }
 
 }
