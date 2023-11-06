@@ -1,6 +1,6 @@
 {
   "name": "@julian5335/spring-boot-node",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Express project made to work similar to spring boot",
   "main": "lib/index.js",
   "types": "lib",
