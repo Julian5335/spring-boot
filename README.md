@@ -193,7 +193,9 @@ import { ErrorHandler } from "@julian5335/spring-boot-node"
 
 export class CustomError1 extends Error { }
 
-export class CustomError2 extends Error { }
+export class CustomError2 extends Error {
+    html = "<h1>Custom Error 2</h1>"
+}
 
 export default class CustomErrorHandler {
 
@@ -203,8 +205,8 @@ export default class CustomErrorHandler {
     }
 
     @ErrorHandler(CustomError2)
-    handleCustomError2(req: Request, res: Response) {
-        return res.send("<h1>Custom Error 2</h1>")
+    handleCustomError2(req: Request, res: Response, e: CustomError2) {
+        return res.send(e.html)
     }
 
 }

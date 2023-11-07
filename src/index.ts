@@ -110,7 +110,7 @@ export default class App {
                 this.instance.use((e: Error, req: Request, res: Response, next: NextFunction) => {
                     if (e instanceof errorClass) {
                         const h: Function = errorHandlerInstance[String(handlerName)]
-                        return h(req, res)
+                        return h(req, res, e)
                     }
                     next(e)
                 })
