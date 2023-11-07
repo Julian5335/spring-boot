@@ -3,7 +3,11 @@ import "reflect-metadata";
 import methodDecoratorFactory from './core/decorators/methods';
 import { HttpMethod } from './core/enums/http-method';
 import { MetadataKeys } from './core/enums/metadata-keys';
-import { IRouter } from './core/models/irouter';
+import IRouter from './core/models/irouter';
+import { errorHandler } from './core/decorators/error.handler';
+import IErrorHandler from './core/models/ierrorhandler';
+
+export const ErrorHandler = errorHandler
 
 export class HandledError extends Error {
     status = 500
@@ -28,13 +32,15 @@ export const Middleware = methodDecoratorFactory(HttpMethod.MIDDLEWARE)
 export default class App {
 
     readonly instance = express();
-    private controllers: any[] = []
+    private controllerClasses: any[]
+    private errorHandlerClass?: any
 
-    constructor(controllers: any[]) {
-        this.controllers = controllers
+    constructor(controllers: any[] = [], errorHandlerClass?: any) {
+        this.controllerClasses = controllers
+        this.errorHandlerClass = errorHandlerClass
         this.registerMiddleware()
         this.registerRouters();
-        this.useErrorHandler()
+        this.useErrorHandlers()
     }
     
     private registerMiddleware() {
@@ -48,7 +54,7 @@ export default class App {
         });
 
         // Register routers
-        this.controllers.forEach(controllerClass => {
+        this.controllerClasses.forEach(controllerClass => {
             this.createRouteFrom(controllerClass)
         });
     }
@@ -84,7 +90,7 @@ export default class App {
         this.instance.use(basePath, router);
     }
 
-    private catchWrap(originalFunction: any, controllerInstance: {[name: string]: express.Handler}) {
+    private catchWrap(originalFunction: Handler, controllerInstance: {[name: string]: Handler}) {
         return async function(req: Request, res: Response, next: NextFunction) {
             try {
                 return await originalFunction.call(controllerInstance, req, res, next);
@@ -94,7 +100,22 @@ export default class App {
         };
     }
 
-    private useErrorHandler() {
+    private useErrorHandlers() {
+        if (this.errorHandlerClass) {
+            const errorHandlerInstance = new this.errorHandlerClass() as any;
+            const metadata: IErrorHandler[] = Reflect.getMetadata(MetadataKeys.ERROR_HANDLERS, this.errorHandlerClass)
+            metadata.forEach(x => {
+                const handlerName = x.name
+                const errorClass = x.errorClass
+                this.instance.use((e: Error, req: Request, res: Response, next: NextFunction) => {
+                    if (e instanceof errorClass) {
+                        const h: Function = errorHandlerInstance[String(handlerName)]
+                        return h(req, res)
+                    }
+                    next(e)
+                })
+            })
+        }
         const errorHandler = (e: Error, req: Request, res: Response, next: NextFunction) => {
             if (e instanceof HandledError) {
                 return res.status(e.status).json({ errors : e.errors })

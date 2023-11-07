@@ -184,3 +184,34 @@ Any uncaught errors result in the following error response.
     }
 }
 ```
+
+Further customization is available by creating a custom error handling class
+
+```typescript
+import { Request, Response } from "express"
+import { ErrorHandler } from "@julian5335/spring-boot-node"
+
+export class CustomError1 extends Error { }
+
+export class CustomError2 extends Error { }
+
+export default class CustomErrorHandler {
+
+    @ErrorHandler(CustomError1)
+    handleCustomError1(req: Request, res: Response) {
+        return res.status(403).json({ "message": "custom error 1" })
+    }
+
+    @ErrorHandler(CustomError2)
+    handleCustomError2(req: Request, res: Response) {
+        return res.send("<h1>Custom Error 2</h1>")
+    }
+
+}
+```
+
+And add the error handling class to App
+
+```typescript
+const app = new App(controllers, CustomErrorHandler)
+```

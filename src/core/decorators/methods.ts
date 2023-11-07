@@ -1,6 +1,6 @@
 import { HttpMethod } from "../enums/http-method";
 import { MetadataKeys } from "../enums/metadata-keys";
-import { IRouter } from "../models/irouter";
+import IRouter from "../models/irouter";
 
 export interface RouterMethodInput {
     path: string,
