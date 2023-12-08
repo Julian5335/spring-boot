@@ -101,11 +101,13 @@ The middleware functions run in the specified order before the http routes
 ### index.ts
 ```typescript
 import * as http from 'http';
-import App from '@julian5335/spring-boot-node'
+import App, { Config } from '@julian5335/spring-boot-node'
 import UserController from './controllers/user.controller'
 
-const controllers = [ UserController ]
-const app = new App(controllers)
+const config: Config = {
+    controllers = [ UserController ]
+}
+const app = new App(config)
 
 const PORT = 3000;
 const server = http.createServer(app.instance);
@@ -215,5 +217,9 @@ export default class CustomErrorHandler {
 And add the error handling class to App
 
 ```typescript
-const app = new App(controllers, CustomErrorHandler)
+const config: Config = {
+    controllers = [ UserController ],
+    errorHandlerClass = CustomErrorHandler
+}
+const app = new App(config)
 ```

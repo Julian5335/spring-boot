@@ -6,6 +6,7 @@ import { MetadataKeys } from './core/enums/metadata-keys';
 import IRouter from './core/models/irouter';
 import { errorHandler } from './core/decorators/error.handler';
 import IErrorHandler from './core/models/ierrorhandler';
+import cors, { CorsOptions } from "cors";
 
 export const ErrorHandler = errorHandler
 
@@ -17,6 +18,12 @@ export class HandledError extends Error {
         this.errors = errors
         if (status) this.status = status
     }
+}
+
+export class Config {
+    controllers: any[] = []
+    cors?: CorsOptions
+    errorHandlerClass?: any
 }
 
 export const Controller = (basePath: string): ClassDecorator => {
@@ -34,16 +41,19 @@ export default class App {
     readonly instance = express();
     private controllerClasses: any[]
     private errorHandlerClass?: any
+    private corsOptions?: CorsOptions
 
-    constructor(controllers: any[] = [], errorHandlerClass?: any) {
-        this.controllerClasses = controllers
-        this.errorHandlerClass = errorHandlerClass
+    constructor(config: Config) {
+        this.controllerClasses = config.controllers
+        this.errorHandlerClass = config.errorHandlerClass
+        this.corsOptions = config.cors
         this.registerMiddleware()
         this.registerRouters();
         this.useErrorHandlers()
     }
     
     private registerMiddleware() {
+        this.instance.use(cors(this.corsOptions))
         this.instance.use(express.json())
     }
 
